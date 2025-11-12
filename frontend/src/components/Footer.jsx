@@ -60,13 +60,13 @@ export default function Footer(){
             <h4 className="text-lg font-semibold mb-4 text-white">For Users</h4>
             <ul className="space-y-2">
               <li>
-                <a href="/auth/student" className="text-gray-400 hover:text-white transition-colors text-sm">Student Login</a>
+                <a href="/#roles" className="text-gray-400 hover:text-white transition-colors text-sm">Student Portal</a>
               </li>
               <li>
-                <a href="/auth/company" className="text-gray-400 hover:text-white transition-colors text-sm">Company Login</a>
+                <a href="/#roles" className="text-gray-400 hover:text-white transition-colors text-sm">Company Portal</a>
               </li>
               <li>
-                <a href="/auth/admin" className="text-gray-400 hover:text-white transition-colors text-sm">Admin Login</a>
+                <a href="/#roles" className="text-gray-400 hover:text-white transition-colors text-sm">Admin Portal</a>
               </li>
             </ul>
           </div>

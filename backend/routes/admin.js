@@ -10,6 +10,8 @@ const User = require('../models/User');
 const Job = require('../models/Job');
 const JobDeletionRequest = require('../models/JobDeletionRequest');
 const ProfileEditRequest = require('../models/ProfileEditRequest');
+const CompanyPermissionRequest = require('../models/CompanyPermissionRequest');
+const Notification = require('../models/Notification');
 
 // get current admin profile
 router.get('/me', auth.requireAuth, auth.requireRole(['admin']), async (req, res)=>{
@@ -144,6 +146,80 @@ router.patch('/deletion-requests/:id', auth.requireAuth, auth.requireRole(['admi
     if(comments !== undefined) reqDoc.comments = comments;
     await reqDoc.save();
     res.json({ msg: 'Updated' });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// list all company permission requests
+router.get('/company-permission-requests', auth.requireAuth, auth.requireRole(['admin']), async (req, res)=>{
+  try{
+    const requests = await CompanyPermissionRequest.find()
+      .populate('studentId', 'email profile')
+      .populate('companyId', 'email profile')
+      .sort({ requestedAt: -1 });
+    res.json(requests);
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// approve company permission request
+router.post('/company-permission-requests/:id/approve', auth.requireAuth, auth.requireRole(['admin']), async (req, res)=>{
+  try{
+    const id = req.params.id;
+    const request = await CompanyPermissionRequest.findById(id);
+    if(!request) return res.status(404).json({ error: 'Request not found' });
+    
+    request.status = 'Approved';
+    request.respondedAt = new Date();
+    request.adminNote = req.body.note || '';
+    await request.save();
+    
+    // Notify student
+    try{
+      await Notification.create({
+        userId: request.studentId,
+        type: 'permission_approved',
+        title: 'Permission Approved',
+        message: 'Your request to apply to a company has been approved by admin',
+        data: { requestId: request._id, companyId: request.companyId }
+      });
+    }catch(e){ console.error('notif error', e) }
+    
+    res.json({ msg: 'Permission request approved' });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// reject company permission request
+router.post('/company-permission-requests/:id/reject', auth.requireAuth, auth.requireRole(['admin']), async (req, res)=>{
+  try{
+    const id = req.params.id;
+    const request = await CompanyPermissionRequest.findById(id);
+    if(!request) return res.status(404).json({ error: 'Request not found' });
+    
+    request.status = 'Rejected';
+    request.respondedAt = new Date();
+    request.adminNote = req.body.note || '';
+    await request.save();
+    
+    // Notify student
+    try{
+      await Notification.create({
+        userId: request.studentId,
+        type: 'permission_rejected',
+        title: 'Permission Rejected',
+        message: 'Your request to apply to a company has been rejected by admin',
+        data: { requestId: request._id, companyId: request.companyId }
+      });
+    }catch(e){ console.error('notif error', e) }
+    
+    res.json({ msg: 'Permission request rejected' });
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Server error' });

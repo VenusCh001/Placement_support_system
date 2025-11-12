@@ -9,6 +9,7 @@ const Job = require('../models/Job');
 const Application = require('../models/Application');
 const Notification = require('../models/Notification');
 const ProfileEditRequest = require('../models/ProfileEditRequest');
+const CompanyPermissionRequest = require('../models/CompanyPermissionRequest');
 
 const auth = require('../middleware/auth');
 
@@ -158,6 +159,79 @@ router.post('/profile-edit-request', auth.requireAuth, auth.requireRole(['studen
 router.get('/profile-edit-requests', auth.requireAuth, auth.requireRole(['student']), async (req, res)=>{
   try{
     const requests = await ProfileEditRequest.find({ studentId: req.user._id }).sort({ createdAt: -1 });
+    res.json(requests);
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// check if student has any selected (offer) applications
+router.get('/has-offer', auth.requireAuth, auth.requireRole(['student']), async (req, res)=>{
+  try{
+    const selectedApp = await Application.findOne({ studentId: req.user._id, status: 'Selected' });
+    res.json({ hasOffer: !!selectedApp });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// request permission to apply to a company (when already placed)
+router.post('/request-company-permission', auth.requireAuth, auth.requireRole(['student']), async (req, res)=>{
+  try{
+    const { companyId, reason } = req.body;
+    
+    if(!companyId || !reason) {
+      return res.status(400).json({ error: 'Company ID and reason are required' });
+    }
+
+    // Check if already requested
+    const existing = await CompanyPermissionRequest.findOne({
+      studentId: req.user._id,
+      companyId,
+      status: 'Pending'
+    });
+    
+    if(existing) {
+      return res.status(400).json({ error: 'Permission request already pending for this company' });
+    }
+
+    const request = new CompanyPermissionRequest({
+      studentId: req.user._id,
+      companyId,
+      reason
+    });
+    
+    await request.save();
+    
+    // Notify admin
+    try{
+      const admins = await User.find({ role: 'admin' });
+      for(const admin of admins) {
+        await Notification.create({
+          userId: admin._id,
+          type: 'permission_request',
+          title: 'Company Permission Request',
+          message: `Student has requested permission to apply to a company after being placed`,
+          data: { requestId: request._id, studentId: req.user._id }
+        });
+      }
+    }catch(e){ console.error('notif error', e) }
+    
+    res.json({ msg: 'Permission request submitted successfully' });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// list my company permission requests
+router.get('/company-permission-requests', auth.requireAuth, auth.requireRole(['student']), async (req, res)=>{
+  try{
+    const requests = await CompanyPermissionRequest.find({ studentId: req.user._id })
+      .populate('companyId', 'email profile')
+      .sort({ requestedAt: -1 });
     res.json(requests);
   }catch(err){
     console.error(err);

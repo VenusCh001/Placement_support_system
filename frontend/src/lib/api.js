@@ -186,7 +186,50 @@ export async function rejectProfileEditRequest(id, comments) {
 }
 
 // ============================================================================
-// Utility Functions
+// Company Permission Request APIs
+// ============================================================================
+
+export async function requestCompanyPermission(companyId, reason) {
+  return request('/api/students/request-company-permission', {
+    method: 'POST',
+    body: { companyId, reason },
+  });
+}
+
+export async function getMyCompanyPermissionRequests() {
+  return request('/api/students/company-permission-requests', {
+    method: 'GET',
+  });
+}
+
+export async function getAllCompanyPermissionRequests() {
+  return request('/api/admin/company-permission-requests', {
+    method: 'GET',
+  });
+}
+
+export async function approveCompanyPermissionRequest(requestId, note = '') {
+  return request(`/api/admin/company-permission-requests/${requestId}/approve`, {
+    method: 'POST',
+    body: { note },
+  });
+}
+
+export async function rejectCompanyPermissionRequest(requestId, note = '') {
+  return request(`/api/admin/company-permission-requests/${requestId}/reject`, {
+    method: 'POST',
+    body: { note },
+  });
+}
+
+export async function checkHasOffer() {
+  return request('/api/students/has-offer', {
+    method: 'GET',
+  });
+}
+
+// ============================================================================
+// Utilities
 // ============================================================================
 
 /**
@@ -235,6 +278,12 @@ export default {
   getProfileEditRequests,
   approveProfileEditRequest,
   rejectProfileEditRequest,
+  requestCompanyPermission,
+  getMyCompanyPermissionRequests,
+  getAllCompanyPermissionRequests,
+  approveCompanyPermissionRequest,
+  rejectCompanyPermissionRequest,
+  checkHasOffer,
   parseJwtRole,
   isAuthenticated,
   getAuthData,

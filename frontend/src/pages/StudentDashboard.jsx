@@ -16,6 +16,8 @@ export default function StudentDashboard(){
   const [editRequests, setEditRequests] = useState([])
   const [showRequests, setShowRequests] = useState(false)
   const [activeTab, setActiveTab] = useState('jobs') // 'jobs' or 'applications'
+  const [hasOffer, setHasOffer] = useState(false)
+  const [offerCount, setOfferCount] = useState(0)
 
   useEffect(()=>{
     async function load(){
@@ -33,11 +35,29 @@ export default function StudentDashboard(){
       // Load edit requests
       const requests = await getMyProfileEditRequests();
       setEditRequests(requests || []);
+
+      // Check for offers (Selected status)
+      await checkOfferStatus();
     }
     load();
   },[])
 
   const navigate = useNavigate();
+
+  async function checkOfferStatus(){
+    try {
+      const base = (import.meta.env.VITE_API_BASE || 'http://localhost:4000')
+      const res = await fetch(base + '/api/students/applications', { 
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } 
+      });
+      const apps = await res.json();
+      const selectedApps = (apps || []).filter(app => app.status === 'Selected');
+      setHasOffer(selectedApps.length > 0);
+      setOfferCount(selectedApps.length);
+    } catch(err) {
+      console.error('Error checking offer status:', err);
+    }
+  }
 
   async function handleUpload(e){
     e.preventDefault();
@@ -97,6 +117,48 @@ export default function StudentDashboard(){
                       {me.profile?.name || 'Student'}
                     </h2>
                     <p className="text-sm text-gray-500">{me.email}</p>
+                  </div>
+
+                  {/* Offer Status */}
+                  <div className="py-4 border-b border-gray-200">
+                    {hasOffer ? (
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-4">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-lg font-bold text-green-800">Offer Received!</span>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-green-700 mb-1">{offerCount}</div>
+                          <div className="text-xs font-semibold text-green-600 uppercase tracking-wide">
+                            {offerCount === 1 ? 'Job Offer' : 'Job Offers'}
+                          </div>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-green-200">
+                          <div className="flex items-center justify-center gap-2 text-xs text-green-700">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="font-medium">Congratulations on your placement!</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-gradient-to-r from-gray-50 to-slate-50 border-2 border-gray-200 rounded-xl p-4">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          <span className="text-lg font-bold text-gray-600">No Offer Yet</span>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-gray-500 font-medium mt-2">
+                            Keep applying to get your dream job!
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Profile Details */}
@@ -422,7 +484,7 @@ export default function StudentDashboard(){
                   </svg>
                 </div>
               </div>
-              {activeTab === 'jobs' ? <AllJobs me={me} /> : <MyApplications />}
+              {activeTab === 'jobs' ? <AllJobs me={me} onApplicationChange={checkOfferStatus} /> : <MyApplications onStatusChange={checkOfferStatus} />}
             </div>
           </div>
         </div>
@@ -431,11 +493,16 @@ export default function StudentDashboard(){
   )
 }
 
-function AllJobs({ me }){
+function AllJobs({ me, onApplicationChange }){
   const [jobs, setJobs] = useState(null)
   const [appsMap, setAppsMap] = useState({})
   const [applyingMap, setApplyingMap] = useState({})
   const [modalJob, setModalJob] = useState(null)
+  const [permissionRequests, setPermissionRequests] = useState({})
+  const [requestingPermission, setRequestingPermission] = useState({})
+  const [hasOffer, setHasOffer] = useState(false)
+  const [showPermissionModal, setShowPermissionModal] = useState(false)
+  const [permissionModalData, setPermissionModalData] = useState({ companyId: '', companyName: '', reason: '' })
 
   useEffect(()=>{
     async function load(){
@@ -462,6 +529,23 @@ function AllJobs({ me }){
       const map = {};
       (apps || []).forEach(a => { if(a.jobId) map[a.jobId] = a })
       setAppsMap(map);
+
+      // Check if student has offer
+      const selectedApps = (apps || []).filter(app => app.status === 'Selected');
+      setHasOffer(selectedApps.length > 0);
+
+      // Load permission requests
+      const permRes = await fetch(base + '/api/students/company-permission-requests', { 
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } 
+      });
+      const permissions = await permRes.json();
+      const permMap = {};
+      (permissions || []).forEach(p => {
+        if(p.companyId && p.companyId._id) {
+          permMap[p.companyId._id] = p;
+        }
+      });
+      setPermissionRequests(permMap);
     }
     load();
   },[])
@@ -474,6 +558,62 @@ function AllJobs({ me }){
     <div className="text-xl font-medium text-gray-700">No jobs available at the moment</div>
     <p className="text-sm mt-2">Check back later for new opportunities</p>
   </div>
+
+  async function requestPermission(companyId, companyName){
+    setPermissionModalData({ companyId, companyName, reason: '' });
+    setShowPermissionModal(true);
+  }
+
+  async function submitPermissionRequest(){
+    const { companyId, reason } = permissionModalData;
+    
+    if(!reason || reason.trim() === '') {
+      alert('Please provide a reason for your request');
+      return;
+    }
+
+    setRequestingPermission(m => ({ ...m, [companyId]: true }));
+    setShowPermissionModal(false);
+    const base = (import.meta.env.VITE_API_BASE || 'http://localhost:4000')
+    
+    try{
+      const res = await fetch(base + '/api/students/request-company-permission', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ companyId, reason: reason.trim() })
+      });
+      
+      const data = await res.json();
+      
+      if(res.ok){
+        alert('Permission request submitted successfully! Admin will review your request.');
+        // Reload permission requests
+        const permRes = await fetch(base + '/api/students/company-permission-requests', { 
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } 
+        });
+        const permissions = await permRes.json();
+        const permMap = {};
+        (permissions || []).forEach(p => {
+          if(p.companyId && p.companyId._id) {
+            permMap[p.companyId._id] = p;
+          }
+        });
+        setPermissionRequests(permMap);
+        // Reset modal data
+        setPermissionModalData({ companyId: '', companyName: '', reason: '' });
+      } else {
+        alert(data.error || 'Failed to submit permission request');
+      }
+    }catch(err){
+      console.error('Permission request failed', err);
+      alert('Permission request failed: ' + (err.message || err));
+    }finally{
+      setRequestingPermission(m => ({ ...m, [companyId]: false }));
+    }
+  }
 
   async function apply(jobId){
     const role = localStorage.getItem('role');
@@ -496,6 +636,12 @@ function AllJobs({ me }){
       const map = {};
       (apps || []).forEach(a => { if(a.jobId) map[a.jobId] = a })
       setAppsMap(map);
+      
+      // Update offer status in parent
+      if(onApplicationChange) {
+        onApplicationChange();
+      }
+      
       return data;
     }catch(err){
       console.error('Apply failed', err);
@@ -510,6 +656,34 @@ function AllJobs({ me }){
 
   return (
     <div className="mt-3">
+      {hasOffer && (
+        <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-green-800 mb-2">🎉 Congratulations! You Have Been Placed!</h3>
+              <p className="text-green-700 mb-3">
+                You already have a job offer (Selected status). You cannot apply to other companies unless you request special permission from the admin.
+              </p>
+              <div className="bg-white bg-opacity-60 rounded-lg p-4 border border-green-200">
+                <p className="text-sm text-green-800 font-medium mb-2">
+                  <strong>To apply to another company:</strong>
+                </p>
+                <ol className="text-sm text-green-700 list-decimal list-inside space-y-1">
+                  <li>Click the "Request Permission" button next to the company you're interested in</li>
+                  <li>Provide a valid reason for your request</li>
+                  <li>Wait for admin approval</li>
+                  <li>Once approved, you'll be able to apply to that specific company</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead>
@@ -556,14 +730,69 @@ function AllJobs({ me }){
                     }
                   </td>
                   <td className="px-4 py-4 text-sm align-top">
-                    <button
-                      title={!eligible ? 'You are not eligible for this job' : app ? 'You have already applied' : 'Apply'}
-                      disabled={!eligible || !!app || applyingMap[j._id]}
-                      onClick={async ()=>{ if(!eligible || app) return; await apply(j._id); }}
-                      className={`${(!eligible || app) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : (applyingMap[j._id] ? 'bg-yellow-500 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700')} px-4 py-2 rounded-lg font-medium transition shadow-sm`}
-                    >
-                      {applyingMap[j._id] ? 'Applying…' : 'Apply'}
-                    </button>
+                    {hasOffer ? (
+                      // Student has offer - check permission status
+                      (() => {
+                        const permission = permissionRequests[j.companyId];
+                        if(permission?.status === 'Approved') {
+                          // Permission approved - can apply
+                          return (
+                            <button
+                              title={!eligible ? 'You are not eligible for this job' : app ? 'You have already applied' : 'Apply (Permission Granted)'}
+                              disabled={!eligible || !!app || applyingMap[j._id]}
+                              onClick={async ()=>{ if(!eligible || app) return; await apply(j._id); }}
+                              className={`${(!eligible || app) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : (applyingMap[j._id] ? 'bg-yellow-500 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700')} px-4 py-2 rounded-lg font-medium transition shadow-sm`}
+                            >
+                              {applyingMap[j._id] ? 'Applying…' : 'Apply'}
+                            </button>
+                          );
+                        } else if(permission?.status === 'Pending') {
+                          // Request pending
+                          return (
+                            <button
+                              disabled
+                              className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-lg font-medium cursor-not-allowed border border-yellow-300"
+                              title="Permission request pending"
+                            >
+                              Request Pending
+                            </button>
+                          );
+                        } else if(permission?.status === 'Rejected') {
+                          // Request rejected
+                          return (
+                            <button
+                              disabled
+                              className="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium cursor-not-allowed border border-red-300"
+                              title="Permission request rejected"
+                            >
+                              Request Denied
+                            </button>
+                          );
+                        } else {
+                          // No request yet - show request button
+                          return (
+                            <button
+                              onClick={()=> requestPermission(j.companyId, j.companyName || j.companyEmail)}
+                              disabled={requestingPermission[j.companyId]}
+                              className="bg-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition shadow-sm"
+                              title="You already have an offer. Request permission to apply here."
+                            >
+                              {requestingPermission[j.companyId] ? 'Requesting...' : 'Request Permission'}
+                            </button>
+                          );
+                        }
+                      })()
+                    ) : (
+                      // No offer - normal application flow
+                      <button
+                        title={!eligible ? 'You are not eligible for this job' : app ? 'You have already applied' : 'Apply'}
+                        disabled={!eligible || !!app || applyingMap[j._id]}
+                        onClick={async ()=>{ if(!eligible || app) return; await apply(j._id); }}
+                        className={`${(!eligible || app) ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : (applyingMap[j._id] ? 'bg-yellow-500 text-white' : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700')} px-4 py-2 rounded-lg font-medium transition shadow-sm`}
+                      >
+                        {applyingMap[j._id] ? 'Applying…' : 'Apply'}
+                      </button>
+                    )}
                   </td>
                   <td className="px-4 py-4 text-sm align-top">
                     {app ? 
@@ -589,6 +818,118 @@ function AllJobs({ me }){
         </table>
       </div>
 
+      {/* Permission Request Modal */}
+      {showPermissionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowPermissionModal(false)} />
+          <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl z-10 overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 px-8 py-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-white">Request Permission</h3>
+                    <p className="text-orange-100 text-sm">Submit your request to apply to this company</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowPermissionModal(false)}
+                  className="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-8 py-6">
+              {/* Info Banner */}
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm text-blue-800 font-medium">
+                      You already have a job offer. This request will be reviewed by the admin before you can apply to this company.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Company Info */}
+              <div className="mb-6 bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+                    {permissionModalData.companyName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold">Requesting Permission For</p>
+                    <p className="text-lg font-bold text-gray-900">{permissionModalData.companyName}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Reason for Request <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={permissionModalData.reason}
+                    onChange={(e) => setPermissionModalData(d => ({ ...d, reason: e.target.value }))}
+                    rows={6}
+                    className="w-full border-2 border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition resize-none"
+                    placeholder="Please explain why you want to apply to this company despite already having an offer. For example:&#10;• Better package or role alignment&#10;• Specific interest in the company&#10;• Career growth opportunities&#10;• Any other valid reason"
+                  />
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-xs text-gray-500">
+                      Be specific and professional. Admin will review your request.
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {permissionModalData.reason.length} characters
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-50 px-8 py-4 flex items-center justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowPermissionModal(false);
+                  setPermissionModalData({ companyId: '', companyName: '', reason: '' });
+                }}
+                className="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitPermissionRequest}
+                disabled={!permissionModalData.reason.trim()}
+                className={`px-6 py-2.5 rounded-lg font-semibold transition shadow-lg ${
+                  permissionModalData.reason.trim() 
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Submit Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Job Details Modal */}
       {modalJob && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black opacity-40" onClick={()=>setModalJob(null)} />
@@ -616,7 +957,7 @@ function AllJobs({ me }){
   )
 }
 
-function MyApplications(){
+function MyApplications({ onStatusChange }){
   const [apps, setApps] = useState(null)
 
   useEffect(()=>{ load() },[])
@@ -625,6 +966,11 @@ function MyApplications(){
     const res = await fetch((import.meta.env.VITE_API_BASE || 'http://localhost:4000') + '/api/students/applications', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
     const data = await res.json();
     setApps(data || []);
+    
+    // Update offer status in parent whenever applications are loaded
+    if(onStatusChange) {
+      onStatusChange();
+    }
   }
 
   if(!apps) return (
