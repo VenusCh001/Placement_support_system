@@ -70,18 +70,18 @@ export default function CompanyDashboard(){
     ];
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black opacity-40" onClick={()=>setCloseModal({ open: false, job: null, status: 'completed', reason: 'Recruitment Completed', hiredCount: '' })} />
-        <div className="relative bg-white w-11/12 max-w-lg rounded-xl shadow-2xl p-6 z-10">
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">Close Recruitment</h3>
-          <div className="text-sm text-gray-600 mb-5">Closing recruitment for <span className="font-semibold text-gray-800">"{job?.title}"</span></div>
+        <div className="absolute inset-0 bg-black opacity-40 dark:opacity-70" onClick={()=>setCloseModal({ open: false, job: null, status: 'completed', reason: 'Recruitment Completed', hiredCount: '' })} />
+        <div className="relative bg-white dark:bg-gray-800 w-11/12 max-w-lg rounded-xl shadow-2xl dark:shadow-gray-900/50 p-6 z-10">
+          <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Close Recruitment</h3>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-5">Closing recruitment for <span className="font-semibold text-gray-800 dark:text-gray-200">"{job?.title}"</span></div>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
               <select 
                 value={closeModal.status} 
                 onChange={e=>setCloseModal(d=>({...d, status: e.target.value}))} 
-                className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition"
               >
                 <option value="completed">Completed (Successfully hired)</option>
                 <option value="closed">Closed (Not hiring anymore)</option>
@@ -89,11 +89,11 @@ export default function CompanyDashboard(){
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Closure Reason</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Closure Reason</label>
               <select 
                 value={closeModal.reason} 
                 onChange={e=>setCloseModal(d=>({...d, reason: e.target.value}))} 
-                className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition"
               >
                 {reasons.map(opt=> <option key={opt} value={opt}>{opt}</option>)}
               </select>
@@ -101,8 +101,8 @@ export default function CompanyDashboard(){
 
             {closeModal.status === 'completed' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Number of Candidates Hired <span className="text-gray-500">(optional)</span>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Number of Candidates Hired <span className="text-gray-500 dark:text-gray-400">(optional)</span>
                 </label>
                 <input 
                   type="number"
@@ -110,7 +110,7 @@ export default function CompanyDashboard(){
                   value={closeModal.hiredCount} 
                   onChange={e=>setCloseModal(d=>({...d, hiredCount: e.target.value}))} 
                   placeholder="e.g., 5"
-                  className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition" 
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition" 
                 />
               </div>
             )}
@@ -119,14 +119,14 @@ export default function CompanyDashboard(){
           <div className="mt-6 flex justify-end space-x-3">
             <button 
               onClick={()=>setCloseModal({ open: false, job: null, status: 'completed', reason: 'Recruitment Completed', hiredCount: '' })} 
-              className="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition"
+              className="px-5 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition"
             >
               Cancel
             </button>
             <button 
               onClick={confirmClose} 
               disabled={closeModal.saving}
-              className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:from-purple-700 hover:to-pink-700 transition shadow-lg disabled:opacity-50"
+              className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 text-white font-medium hover:from-purple-700 hover:to-pink-700 dark:hover:from-purple-600 dark:hover:to-pink-600 transition shadow-lg disabled:opacity-50"
             >
               {closeModal.saving ? 'Closing...' : 'Close Recruitment'}
             </button>
@@ -147,23 +147,23 @@ export default function CompanyDashboard(){
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 py-8 px-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-900 py-8 px-6">
       <div className="max-w-[2200px] mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 mb-2">
             Company Dashboard
           </h1>
-          <p className="text-gray-600">Post job openings and manage applications.</p>
+          <p className="text-gray-600 dark:text-gray-400">Post job openings and manage applications.</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">{/* Create Job Form */}
           {/* Create Job Form */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 sticky top-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 sticky top-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-800">Create Job</h2>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Create Job</h2>
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 dark:from-purple-600 dark:to-indigo-700 flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
@@ -174,7 +174,7 @@ export default function CompanyDashboard(){
                   <select 
                     value={form.title} 
                     onChange={e=>setForm(f=>({...f, title: e.target.value}))} 
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition bg-white" 
+                    className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-transparent transition bg-white" 
                   >
                     <option value="">Select Job Role</option>
                     {JOB_ROLES.map(role => (
@@ -187,7 +187,7 @@ export default function CompanyDashboard(){
                     value={form.description} 
                     onChange={e=>setForm(f=>({...f, description: e.target.value}))} 
                     placeholder="Job description and requirements" 
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition h-24" 
+                    className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-transparent transition h-24" 
                   />
                 </FormField>
                 <div className="grid grid-cols-2 gap-3">
@@ -196,7 +196,7 @@ export default function CompanyDashboard(){
                       value={form.ctc} 
                       onChange={e=>setForm(f=>({...f, ctc: e.target.value}))} 
                       placeholder="e.g., 12 LPA" 
-                      className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition" 
+                      className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-transparent transition" 
                     />
                   </FormField>
                   <FormField label="Location">
@@ -219,38 +219,90 @@ export default function CompanyDashboard(){
                   </FormField>
                   <FormField label="Eligible Branches">
                     <select 
-                      multiple
-                      value={form.eligibleBranches ? form.eligibleBranches.split(',').map(s => s.trim()) : []}
+                      value=""
                       onChange={(e) => {
-                        const selected = Array.from(e.target.selectedOptions, option => option.value);
-                        setForm(f=>({...f, eligibleBranches: selected.join(', ')}));
+                        const value = e.target.value;
+                        if (value) {
+                          const current = form.eligibleBranches ? form.eligibleBranches.split(',').map(s => s.trim()) : [];
+                          if (!current.includes(value)) {
+                            setForm(f=>({...f, eligibleBranches: current.length > 0 ? `${form.eligibleBranches}, ${value}` : value}));
+                          }
+                        }
+                        e.target.value = '';
                       }}
-                      className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition bg-white"
-                      size="3"
+                      className="w-full border border-gray-300 dark:border-gray-600 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition bg-white dark:bg-gray-700 dark:text-gray-200"
                     >
-                      {BRANCHES.map(branch => (
+                      <option value="">Choose branches to add...</option>
+                      {BRANCHES.filter(branch => {
+                        const current = form.eligibleBranches ? form.eligibleBranches.split(',').map(s => s.trim()) : [];
+                        return !current.includes(branch);
+                      }).map(branch => (
                         <option key={branch} value={branch}>{branch}</option>
                       ))}
                     </select>
-                    <div className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</div>
+                    {form.eligibleBranches && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {form.eligibleBranches.split(',').map((branch, idx) => branch.trim() && (
+                          <span key={idx} className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm flex items-center gap-1">
+                            {branch.trim()}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const branchesArray = form.eligibleBranches.split(',').map(s => s.trim()).filter(s => s !== branch.trim());
+                                setForm(f=>({...f, eligibleBranches: branchesArray.join(', ')}));
+                              }}
+                              className="hover:text-purple-900 dark:hover:text-purple-100 ml-1 font-bold"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </FormField>
                 </div>
                 <FormField label="Required Skills">
                   <select 
-                    multiple
-                    value={form.requiredSkills ? form.requiredSkills.split(',').map(s => s.trim()) : []}
+                    value=""
                     onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions, option => option.value);
-                      setForm(f=>({...f, requiredSkills: selected.join(', ')}));
+                      const value = e.target.value;
+                      if (value) {
+                        const current = form.requiredSkills ? form.requiredSkills.split(',').map(s => s.trim()) : [];
+                        if (!current.includes(value)) {
+                          setForm(f=>({...f, requiredSkills: current.length > 0 ? `${form.requiredSkills}, ${value}` : value}));
+                        }
+                      }
+                      e.target.value = '';
                     }}
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition bg-white"
-                    size="4"
+                    className="w-full border border-gray-300 dark:border-gray-600 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition bg-white dark:bg-gray-700 dark:text-gray-200"
                   >
-                    {SKILLS.map(skill => (
+                    <option value="">Choose skills to add...</option>
+                    {SKILLS.filter(skill => {
+                      const current = form.requiredSkills ? form.requiredSkills.split(',').map(s => s.trim()) : [];
+                      return !current.includes(skill);
+                    }).map(skill => (
                       <option key={skill} value={skill}>{skill}</option>
                     ))}
                   </select>
-                  <div className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple skills</div>
+                  {form.requiredSkills && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {form.requiredSkills.split(',').map((skill, idx) => skill.trim() && (
+                        <span key={idx} className="px-3 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-full text-sm flex items-center gap-1">
+                          {skill.trim()}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const skillsArray = form.requiredSkills.split(',').map(s => s.trim()).filter(s => s !== skill.trim());
+                              setForm(f=>({...f, requiredSkills: skillsArray.join(', ')}));
+                            }}
+                            className="hover:text-pink-900 dark:hover:text-pink-100 ml-1 font-bold"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </FormField>
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition shadow-lg">
                   Create Job
@@ -264,14 +316,14 @@ export default function CompanyDashboard(){
             {selectedJob ? (
               <JobApplicationsView job={selectedJob} onBack={()=>setSelectedJob(null)} />
             ) : (
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
               <CloseRecruitmentModal />
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-800">Jobs</h2>
-                  <p className="text-sm text-gray-500 mt-1">{jobs.length} job{jobs.length !== 1 ? 's' : ''} posted</p>
+                  <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Jobs</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{jobs.length} job{jobs.length !== 1 ? 's' : ''} posted</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
@@ -279,35 +331,35 @@ export default function CompanyDashboard(){
               </div>
               
               {jobs.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                  <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <div className="text-lg">No jobs posted yet</div>
-                  <div className="text-sm mt-2">Create your first job posting</div>
+                  <div className="text-lg dark:text-gray-300">No jobs posted yet</div>
+                  <div className="text-sm mt-2 dark:text-gray-400">Create your first job posting</div>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {jobs.map(j=> (
-                    <div key={j._id} className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
+                    <div key={j._id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:shadow-md dark:hover:shadow-gray-900/50 transition dark:bg-gray-700/50">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-lg font-bold">
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 rounded-lg flex items-center justify-center text-white text-lg font-bold">
                               {j.title.charAt(0)}
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-lg text-gray-900">{j.title}</h3>
+                                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">{j.title}</h3>
                                 {j.recruitmentStatus !== 'active' && (
                                   <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${
-                                    j.recruitmentStatus === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                                    j.recruitmentStatus === 'completed' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                                   }`}>
                                     {j.recruitmentStatus === 'completed' ? 'Completed' : 'Closed'}
                                   </span>
                                 )}
                               </div>
-                              <div className="text-sm text-gray-600 flex items-center gap-3">
+                              <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-3">
                                 <div className="flex items-center gap-1">
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -369,17 +421,17 @@ export default function CompanyDashboard(){
                       </div>
                       
                       {form && form._id === j._id && (
-                        <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                          <h4 className="font-semibold mb-3 text-gray-800">Edit Job</h4>
+                        <div className="mt-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <h4 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Edit Job</h4>
                           <div className="space-y-3">
                             <input 
-                              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition" 
+                              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition" 
                               value={form.title} 
                               onChange={e=>setForm(f=>({...f, title: e.target.value}))} 
                               placeholder="Title"
                             />
                             <textarea 
-                              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition h-24" 
+                              className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-transparent transition h-24" 
                               value={form.description} 
                               onChange={e=>setForm(f=>({...f, description: e.target.value}))} 
                               placeholder="Description"
@@ -401,9 +453,9 @@ export default function CompanyDashboard(){
                               >
                                 Save Changes
                               </button>
-                              <button 
-                                onClick={()=>setForm(null)} 
-                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition"
+                                <button 
+                                onClick={()=>setForm(f=>null)} 
+                                className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-500 transition"
                               >
                                 Cancel
                               </button>
@@ -454,30 +506,30 @@ function JobApplicationsView({ job, onBack }){
   }
 
   if(!apps) return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 dark:border-purple-500 border-t-transparent"></div>
       </div>
     </div>
   )
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
       {/* Header with Back Button */}
-      <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
+      <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
         <button 
           onClick={onBack}
-          className="p-2 hover:bg-gray-100 rounded-lg transition"
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
         >
-          <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
         </button>
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-gray-800">Applications for {job.title}</h2>
-          <p className="text-sm text-gray-500 mt-1">{apps.length} application{apps.length !== 1 ? 's' : ''} received</p>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Applications for {job.title}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{apps.length} application{apps.length !== 1 ? 's' : ''} received</p>
         </div>
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 dark:from-purple-600 dark:to-indigo-700 flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
@@ -486,46 +538,46 @@ function JobApplicationsView({ job, onBack }){
 
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-purple-600 border-t-transparent"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-purple-600 dark:border-purple-500 border-t-transparent"></div>
         </div>
       )}
 
       {apps.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <svg className="w-20 h-20 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+          <svg className="w-20 h-20 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <div className="text-xl font-medium text-gray-700">No applications yet</div>
-          <p className="text-sm mt-2">Applications will appear here once students apply</p>
+          <div className="text-xl font-medium text-gray-700 dark:text-gray-300">No applications yet</div>
+          <p className="text-sm mt-2 dark:text-gray-400">Applications will appear here once students apply</p>
         </div>
       ) : (
         <div className="space-y-4">
           {apps.map(app => (
-            <div key={app._id} className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all">
+            <div key={app._id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all dark:bg-gray-700/50">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
                       {app.studentId?.profile?.name?.charAt(0)?.toUpperCase() || app.studentId?.email?.charAt(0)?.toUpperCase() || '?'}
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg text-gray-900">
+                      <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
                         {app.studentId?.profile?.name || 'Student'}
                       </h3>
-                      <p className="text-sm text-gray-600">{app.studentId?.email}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{app.studentId?.email}</p>
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-3 gap-4 mb-4">
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Branch</div>
-                      <div className="text-sm font-medium text-gray-800">{app.studentId?.profile?.branch || 'N/A'}</div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Branch</div>
+                      <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{app.studentId?.profile?.branch || 'N/A'}</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">CGPA</div>
-                      <div className="text-sm font-medium text-gray-800">{app.studentId?.profile?.cgpa || 'N/A'}</div>
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">CGPA</div>
+                      <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{app.studentId?.profile?.cgpa || 'N/A'}</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                       <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Applied On</div>
                       <div className="text-sm font-medium text-gray-800">{new Date(app.appliedAt).toLocaleDateString()}</div>
                     </div>

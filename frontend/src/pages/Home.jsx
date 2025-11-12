@@ -68,16 +68,16 @@ function RoleTile({ role, gradient, description }){
 
 export default function Home(){
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <section className="mb-16 text-center">
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-12">
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl shadow-xl p-8 md:p-12">
             <div className="max-w-3xl mx-auto">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 mb-6">
                 Welcome to IGDTUW Placement Support System
               </h1>
-              <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-8 leading-relaxed">
                 A unified platform connecting students, companies, and administrators to streamline campus placements, job applications, and recruitment processes.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -98,10 +98,10 @@ export default function Home(){
         {/* Role Selection Cards */}
         <section id="roles" className="mb-12">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
               Choose Your Portal
             </h2>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
               Select your role to access your personalized dashboard
             </p>
           </div>
@@ -128,32 +128,32 @@ export default function Home(){
         {/* Features Section */}
         <section className="mt-16">
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-3">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Real-time Tracking</h3>
-              <p className="text-gray-600">Monitor application status and get instant notifications</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">Real-time Tracking</h3>
+              <p className="text-gray-600 dark:text-gray-400">Monitor application status and get instant notifications</p>
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-3">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Secure Platform</h3>
-              <p className="text-gray-600">Role-based access control ensuring data privacy and security</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">Secure Platform</h3>
+              <p className="text-gray-600 dark:text-gray-400">Role-based access control ensuring data privacy and security</p>
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center mb-3">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Quick & Easy</h3>
-              <p className="text-gray-600">Streamlined process for seamless campus recruitment</p>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">Quick & Easy</h3>
+              <p className="text-gray-600 dark:text-gray-400">Streamlined process for seamless campus recruitment</p>
             </div>
           </div>
         </section>
@@ -161,10 +161,10 @@ export default function Home(){
         {/* Statistics & Charts Section */}
         <section className="mt-20 mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">
               Placement Statistics & Insights
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
               Track our success through data-driven insights and comprehensive placement records
             </p>
           </div>
@@ -254,8 +254,8 @@ export default function Home(){
           {/* Charts Section */}
           <div className="grid md:grid-cols-2 gap-8">
             {/* Branch-wise Placement Chart */}
-            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
+              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -266,46 +266,46 @@ export default function Home(){
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-medium text-gray-700">Computer Science (CSE)</span>
-                    <span className="text-blue-600 font-semibold">98%</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Computer Science (CSE)</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-semibold">98%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full" style={{width: '98%'}}></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-medium text-gray-700">Information Technology (IT)</span>
-                    <span className="text-purple-600 font-semibold">96%</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Information Technology (IT)</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-semibold">96%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-full rounded-full" style={{width: '96%'}}></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-medium text-gray-700">Electronics (ECE)</span>
-                    <span className="text-green-600 font-semibold">94%</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Electronics (ECE)</span>
+                    <span className="text-green-600 dark:text-green-400 font-semibold">94%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div className="bg-gradient-to-r from-green-500 to-green-600 h-full rounded-full" style={{width: '94%'}}></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-medium text-gray-700">Electrical (EE)</span>
-                    <span className="text-orange-600 font-semibold">92%</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Electrical (EE)</span>
+                    <span className="text-orange-600 dark:text-orange-400 font-semibold">92%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div className="bg-gradient-to-r from-orange-500 to-orange-600 h-full rounded-full" style={{width: '92%'}}></div>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-medium text-gray-700">Mechanical (ME)</span>
-                    <span className="text-red-600 font-semibold">90%</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Mechanical (ME)</span>
+                    <span className="text-red-600 dark:text-red-400 font-semibold">90%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div className="bg-gradient-to-r from-red-500 to-red-600 h-full rounded-full" style={{width: '90%'}}></div>
                   </div>
                 </div>
@@ -313,8 +313,8 @@ export default function Home(){
             </div>
 
             {/* Top Recruiters & Sectors */}
-            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
+              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -329,13 +329,13 @@ export default function Home(){
                       1
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-800">IT Services</div>
-                      <div className="text-xs text-gray-500">Software Development</div>
+                      <div className="font-semibold text-gray-800 dark:text-gray-200">IT Services</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Software Development</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-blue-600">42%</div>
-                    <div className="text-xs text-gray-500">630 offers</div>
+                    <div className="font-bold text-blue-600 dark:text-blue-400">42%</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">630 offers</div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
@@ -344,13 +344,13 @@ export default function Home(){
                       2
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-800">Core Engineering</div>
-                      <div className="text-xs text-gray-500">Product & Manufacturing</div>
+                      <div className="font-semibold text-gray-800 dark:text-gray-200">Core Engineering</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Product & Manufacturing</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-purple-600">28%</div>
-                    <div className="text-xs text-gray-500">420 offers</div>
+                    <div className="font-bold text-purple-600 dark:text-purple-400">28%</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">420 offers</div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
@@ -359,13 +359,13 @@ export default function Home(){
                       3
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-800">Analytics & Consulting</div>
-                      <div className="text-xs text-gray-500">Data Science & Business</div>
+                      <div className="font-semibold text-gray-800 dark:text-gray-200">Analytics & Consulting</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Data Science & Business</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-green-600">18%</div>
-                    <div className="text-xs text-gray-500">270 offers</div>
+                    <div className="font-bold text-green-600 dark:text-green-400">18%</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">270 offers</div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
@@ -374,13 +374,13 @@ export default function Home(){
                       4
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-800">Finance & Banking</div>
-                      <div className="text-xs text-gray-500">Fintech & Investment</div>
+                      <div className="font-semibold text-gray-800 dark:text-gray-200">Finance & Banking</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Fintech & Investment</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-orange-600">12%</div>
-                    <div className="text-xs text-gray-500">180 offers</div>
+                    <div className="font-bold text-orange-600 dark:text-orange-400">12%</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">180 offers</div>
                   </div>
                 </div>
               </div>
@@ -390,12 +390,12 @@ export default function Home(){
 
         {/* Achievements Section */}
         <section className="mb-20">
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl shadow-2xl p-8 md:p-12 text-white">
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-700 dark:to-indigo-800 rounded-3xl shadow-2xl p-8 md:p-12 text-white">
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-3">
                 Our Achievements
               </h2>
-              <p className="text-blue-100 text-lg">
+              <p className="text-blue-100 dark:text-blue-200 text-lg">
                 Recognition and milestones that define our excellence
               </p>
             </div>
@@ -437,24 +437,24 @@ export default function Home(){
         {/* Testimonials Section */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-3">
               Success Stories
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
               Hear from our successful alumni and recruiters
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="flex items-center gap-2 mb-4 text-yellow-500">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-2 mb-4 text-yellow-500 dark:text-yellow-400">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
-              <p className="text-gray-600 mb-4 italic">
+              <p className="text-gray-600 dark:text-gray-300 mb-4 italic">
                 "The placement cell provided excellent support throughout my journey. Secured my dream job at Google!"
               </p>
               <div className="flex items-center gap-3">
@@ -462,21 +462,21 @@ export default function Home(){
                   A
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-800">Ananya Sharma</div>
-                  <div className="text-sm text-gray-500">CSE 2023 | Google</div>
+                  <div className="font-semibold text-gray-800 dark:text-gray-200">Ananya Sharma</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">CSE 2023 | Google</div>
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="flex items-center gap-2 mb-4 text-yellow-500">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-2 mb-4 text-yellow-500 dark:text-yellow-400">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
-              <p className="text-gray-600 mb-4 italic">
+              <p className="text-gray-600 dark:text-gray-300 mb-4 italic">
                 "IGDTUW students are technically sound and bring fresh perspectives. Highly recommend!"
               </p>
               <div className="flex items-center gap-3">
@@ -484,21 +484,21 @@ export default function Home(){
                   R
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-800">Rajesh Kumar</div>
-                  <div className="text-sm text-gray-500">HR Manager | Microsoft</div>
+                  <div className="font-semibold text-gray-800 dark:text-gray-200">Rajesh Kumar</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">HR Manager | Microsoft</div>
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="flex items-center gap-2 mb-4 text-yellow-500">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-2 mb-4 text-yellow-500 dark:text-yellow-400">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
-              <p className="text-gray-600 mb-4 italic">
+              <p className="text-gray-600 dark:text-gray-300 mb-4 italic">
                 "The platform made application tracking so easy. Got placed in my preferred company with great package!"
               </p>
               <div className="flex items-center gap-3">
@@ -506,8 +506,8 @@ export default function Home(){
                   P
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-800">Priya Verma</div>
-                  <div className="text-sm text-gray-500">IT 2024 | Amazon</div>
+                  <div className="font-semibold text-gray-800 dark:text-gray-200">Priya Verma</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">IT 2024 | Amazon</div>
                 </div>
               </div>
             </div>
@@ -516,85 +516,77 @@ export default function Home(){
 
         {/* Why Hire from IGDTUW Section */}
         <section className="mt-20 mb-16">
-          <div className="relative overflow-hidden rounded-3xl shadow-2xl">
-            {/* Background with pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"></div>
-            <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}}>
-            </div>
+          <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-800 dark:via-gray-800 dark:to-gray-900">
             
-            <div className="relative p-8 md:p-12 text-white">
+            <div className="relative p-8 md:p-12">
               <div className="text-center mb-12">
-                <div className="inline-block px-4 py-2 bg-blue-500/20 backdrop-blur-sm rounded-full text-blue-200 text-sm font-semibold mb-4">
+                <div className="inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900/30 backdrop-blur-sm rounded-full text-blue-700 dark:text-blue-300 text-sm font-semibold mb-4">
                   Premier Women's Technical University
                 </div>
-                <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-cyan-200 to-teal-200">
+                <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400">
                   Why Hire from IGDTUW?
                 </h2>
-                <p className="text-blue-100 text-lg max-w-3xl mx-auto leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-300 text-lg max-w-3xl mx-auto leading-relaxed">
                   Indira Gandhi Delhi Technical University for Women is a premier institution producing world-class women engineers and technology leaders
                 </p>
               </div>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 {/* Card 1 - Blue Theme */}
-                <div className="group relative bg-gradient-to-br from-blue-600/30 to-blue-800/30 backdrop-blur-md rounded-2xl p-6 border border-blue-400/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+                <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                   <div className="relative">
                     <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
                       <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-blue-100">Excellence in Academics</h3>
-                    <p className="text-blue-200/80 text-sm leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Excellence in Academics</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                       Top-tier curriculum with emphasis on practical learning and industry-relevant skills
                     </p>
                   </div>
                 </div>
                 
                 {/* Card 2 - Purple Theme */}
-                <div className="group relative bg-gradient-to-br from-purple-600/30 to-purple-800/30 backdrop-blur-md rounded-2xl p-6 border border-purple-400/20 hover:border-purple-400/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+                <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                   <div className="relative">
                     <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
                       <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-purple-100">Innovation & Research</h3>
-                    <p className="text-purple-200/80 text-sm leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Innovation & Research</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                       Students engaged in cutting-edge research projects and innovative solutions
                     </p>
                   </div>
                 </div>
                 
                 {/* Card 3 - Teal Theme */}
-                <div className="group relative bg-gradient-to-br from-teal-600/30 to-teal-800/30 backdrop-blur-md rounded-2xl p-6 border border-teal-400/20 hover:border-teal-400/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all"></div>
+                <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-teal-400 dark:hover:border-teal-500 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                   <div className="relative">
                     <div className="w-14 h-14 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
                       <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-teal-100">Diverse Talent Pool</h3>
-                    <p className="text-teal-200/80 text-sm leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Diverse Talent Pool</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                       Students from multiple engineering branches with varied skill sets and expertise
                     </p>
                   </div>
                 </div>
                 
                 {/* Card 4 - Orange Theme */}
-                <div className="group relative bg-gradient-to-br from-orange-600/30 to-orange-800/30 backdrop-blur-md rounded-2xl p-6 border border-orange-400/20 hover:border-orange-400/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition-all"></div>
+                <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 hover:border-orange-400 dark:hover:border-orange-500 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                   <div className="relative">
                     <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
                       <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-orange-100">Industry Ready</h3>
-                    <p className="text-orange-200/80 text-sm leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Industry Ready</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                       Strong emphasis on internships, projects, and practical exposure to real-world challenges
                     </p>
                   </div>
@@ -604,24 +596,21 @@ export default function Home(){
               {/* Stats Section */}
               <div className="mt-8 grid md:grid-cols-3 gap-6">
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition"></div>
-                  <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 text-center">
-                    <div className="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-cyan-200 mb-2">1500+</div>
-                    <div className="text-blue-100 font-medium">Students Enrolled</div>
+                  <div className="relative bg-gradient-to-br from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-cyan-600 rounded-2xl p-8 text-center shadow-lg">
+                    <div className="text-5xl font-black text-white mb-2">1500+</div>
+                    <div className="text-blue-50 font-medium">Students Enrolled</div>
                   </div>
                 </div>
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition"></div>
-                  <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 text-center">
-                    <div className="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-200 to-pink-200 mb-2">95%+</div>
-                    <div className="text-purple-100 font-medium">Placement Rate</div>
+                  <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 rounded-2xl p-8 text-center shadow-lg">
+                    <div className="text-5xl font-black text-white mb-2">95%+</div>
+                    <div className="text-purple-50 font-medium">Placement Rate</div>
                   </div>
                 </div>
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition"></div>
-                  <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 text-center">
-                    <div className="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-teal-200 to-emerald-200 mb-2">200+</div>
-                    <div className="text-teal-100 font-medium">Recruiting Companies</div>
+                  <div className="relative bg-gradient-to-br from-teal-500 to-emerald-500 dark:from-teal-600 dark:to-emerald-600 rounded-2xl p-8 text-center shadow-lg">
+                    <div className="text-5xl font-black text-white mb-2">200+</div>
+                    <div className="text-teal-50 font-medium">Recruiting Companies</div>
                   </div>
                 </div>
               </div>
@@ -632,15 +621,15 @@ export default function Home(){
         {/* Past Recruiters Section */}
         <section className="mt-20 mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">
               Our Past Recruiters
             </h2>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
               Join the league of top companies that have recruited from IGDTUW
             </p>
           </div>
 
-          <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 md:p-12 overflow-hidden border border-gray-100 dark:border-gray-700">
             {/* Scrolling logos animation */}
             <div className="relative">
               <div className="flex animate-scroll">
@@ -755,7 +744,7 @@ export default function Home(){
             </div>
 
             <div className="mt-8 text-center">
-              <p className="text-gray-600 italic">
+              <p className="text-gray-600 dark:text-gray-400 italic">
                 And many more leading organizations from various sectors including IT, Finance, Consulting, and Core Engineering
               </p>
             </div>
