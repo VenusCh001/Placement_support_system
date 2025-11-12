@@ -9,6 +9,8 @@ export default function CompanyDashboard(){
   const [form, setForm] = useState({ title: '', description: '', ctc: '', location: '', cgpaCutoff: 0, eligibleBranches: '', requiredSkills: '' })
   const [closeModal, setCloseModal] = useState({ open: false, job: null, status: 'completed', reason: 'Recruitment Completed', hiredCount: '' })
   const [selectedJob, setSelectedJob] = useState(null) // For viewing applications
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
 
   useEffect(()=>{ loadJobs() },[])
 
@@ -42,16 +44,19 @@ export default function CompanyDashboard(){
       const body = await res.json().catch(()=>({}));
       if(res.ok){
         await loadJobs();
-        alert(body.msg || 'Recruitment closed successfully');
+        setSuccess(body.msg || 'Recruitment closed successfully');
+        setTimeout(() => setSuccess(null), 5000);
         setCloseModal({ open: false, job: null, status: 'completed', reason: 'Recruitment Completed', hiredCount: '' });
       } else {
-        alert(body.error || body.msg || `Failed to close recruitment (${res.status})`);
+        setError(body.error || body.msg || `Failed to close recruitment (${res.status})`);
+        setTimeout(() => setError(null), 5000);
         await loadJobs();
         setCloseModal({ open: false, job: null, status: 'completed', reason: 'Recruitment Completed', hiredCount: '' });
       }
     }catch(err){
       console.error('Close recruitment failed', err);
-      alert('Failed to close recruitment: ' + (err.message || err));
+      setError('Failed to close recruitment: ' + (err.message || err));
+      setTimeout(() => setError(null), 5000);
       await loadJobs();
       setCloseModal({ open: false, job: null, status: 'completed', reason: 'Recruitment Completed', hiredCount: '' });
     }
@@ -139,10 +144,22 @@ export default function CompanyDashboard(){
   async function submit(e){
     e.preventDefault();
     // basic validation
-    if(!form.title) return alert('Title required');
+    if(!form.title) {
+      setError('Title required');
+      setTimeout(() => setError(null), 5000);
+      return;
+    }
     const payload = Object.assign({}, form, { eligibleBranches: form.eligibleBranches.split(',').map(s=>s.trim()), requiredSkills: form.requiredSkills.split(',').map(s=>s.trim()) });
     const res = await fetch((import.meta.env.VITE_API_BASE || 'http://localhost:4000') + '/api/companies/jobs', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }, body: JSON.stringify(payload) });
     const data = await res.json();
+    if(res.ok){
+      setSuccess('Job posted successfully!');
+      setTimeout(() => setSuccess(null), 5000);
+      setForm({ title: '', description: '', ctc: '', location: '', cgpaCutoff: 0, eligibleBranches: '', requiredSkills: '' });
+    } else {
+      setError(data.error || 'Failed to post job');
+      setTimeout(() => setError(null), 5000);
+    }
     loadJobs();
   }
 
@@ -156,6 +173,24 @@ export default function CompanyDashboard(){
           </h1>
           <p className="text-gray-600 dark:text-gray-400">Post job openings and manage applications.</p>
         </div>
+
+        {/* Success and Error Messages */}
+        {success && (
+          <div className="mb-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 dark:border-green-400 text-green-800 dark:text-green-300 p-4 rounded-lg flex items-center gap-3">
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">{success}</span>
+          </div>
+        )}
+        {error && (
+          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 dark:border-red-400 text-red-800 dark:text-red-300 p-4 rounded-lg flex items-center gap-3">
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">{error}</span>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">{/* Create Job Form */}
           {/* Create Job Form */}
@@ -443,9 +478,12 @@ export default function CompanyDashboard(){
                                   if(res.ok){
                                     const updated = await res.json();
                                     setJobs(prev => prev.map(j=> j._id === updated._id ? updated : j));
+                                    setSuccess('Job updated successfully!');
+                                    setTimeout(() => setSuccess(null), 5000);
                                     setForm(null);
                                   } else {
-                                    alert('Failed to save');
+                                    setError('Failed to save job');
+                                    setTimeout(() => setError(null), 5000);
                                     loadJobs();
                                   }
                                 }} 
