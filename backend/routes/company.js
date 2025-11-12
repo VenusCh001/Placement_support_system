@@ -4,7 +4,6 @@ const auth = require('../middleware/auth');
 
 const Job = require('../models/Job');
 const Application = require('../models/Application');
-const Notification = require('../models/Notification');
 
 const User = require('../models/User');
 
@@ -177,10 +176,6 @@ router.post('/applications/:id/status', auth.requireAuth, auth.requireRole(['com
     if(app.jobId.companyId.toString() !== req.user._id.toString()) return res.status(403).json({ error: 'Forbidden' });
     app.status = status;
     await app.save();
-    // create notification for student
-    try{
-      await Notification.create({ userId: app.studentId, type: 'application_status', title: `Application ${status}`, message: `Your application for ${app.jobId.title} is now ${status}`, data: { applicationId: app._id, jobId: app.jobId._id } });
-    }catch(e){ console.error('Failed to create notification', e) }
     res.json({ msg: 'Status updated' });
   }catch(err){
     console.error(err);

@@ -69,6 +69,9 @@ export default function AdminDashboard(){
   const [deletions, setDeletions] = useState(null)
   const [credentialRequests, setCredentialRequests] = useState(null)
   const [permissionRequests, setPermissionRequests] = useState(null)
+  const [expandedRequests, setExpandedRequests] = useState({}) // Track expanded state
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
 
   useEffect(()=>{ load() },[])
 
@@ -93,7 +96,9 @@ export default function AdminDashboard(){
 
   async function verifyCompany(id){
     await fetch((import.meta.env.VITE_API_BASE || 'http://localhost:4000') + `/api/admin/companies/${id}/verify`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
-    alert('Done');
+    setSuccess('Company verified successfully!');
+    setTimeout(() => setSuccess(null), 5000);
+    load();
   }
 
   if(!students || !companies) return (
@@ -125,6 +130,24 @@ export default function AdminDashboard(){
           </h1>
           <p className="text-gray-600 dark:text-gray-400">Manage students, companies, and system operations.</p>
         </div>
+
+        {/* Success and Error Messages */}
+        {success && (
+          <div className="mb-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 dark:border-green-400 text-green-800 dark:text-green-300 p-4 rounded-lg flex items-center gap-3">
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">{success}</span>
+          </div>
+        )}
+        {error && (
+          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 dark:border-red-400 text-red-800 dark:text-red-300 p-4 rounded-lg flex items-center gap-3">
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">{error}</span>
+          </div>
+        )}
 
         {/* Sidebar Layout */}
         <div className="flex gap-6">
@@ -173,123 +196,153 @@ export default function AdminDashboard(){
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {credentialRequests.map(req => (
-                    <div key={req._id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all bg-white dark:bg-gray-800">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
+                  {credentialRequests.map(req => {
+                    const isExpanded = expandedRequests[req._id];
+                    return (
+                    <div key={req._id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-all bg-white dark:bg-gray-800">
+                      {/* Header - Always Visible */}
+                      <div 
+                        className="p-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                        onClick={() => setExpandedRequests(prev => ({ ...prev, [req._id]: !prev[req._id] }))}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
                             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 rounded-full flex items-center justify-center text-white text-xl font-bold">
                               {req.studentId?.profile?.name?.charAt(0)?.toUpperCase() || '?'}
                             </div>
-                            <div>
+                            <div className="flex-1">
                               <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
                                 {req.studentId?.profile?.name || 'Unknown Student'}
                               </h3>
                               <div className="text-sm text-gray-600 dark:text-gray-400">{req.studentId?.email}</div>
-                            </div>
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
-                            Submitted: {new Date(req.createdAt).toLocaleString()}
-                          </div>
-                        </div>
-                        <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold ${
-                          req.status === 'approved' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700' :
-                          req.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700' :
-                          'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700'
-                        }`}>
-                          {req.status === 'approved' ? 'Approved' : req.status === 'rejected' ? 'Rejected' : 'Pending'}
-                        </span>
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-4 mb-4">
-                        <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-xl border border-gray-200 dark:border-gray-600">
-                          <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                            <span>📋</span> Current Profile
-                          </h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Name:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.name || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Roll:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.rollNumber || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Branch:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.branch || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">CGPA:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.cgpa || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Phone:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.phone || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Skills:</span> <span className="text-gray-600 dark:text-gray-400">{(req.studentId?.profile?.skills || []).join(', ') || '-'}</span></div>
-                          </div>
-                        </div>
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border border-blue-200 dark:border-blue-800">
-                          <h4 className="font-semibold text-sm text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
-                            <span>✨</span> Requested Changes
-                          </h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Name:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.name || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Roll:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.rollNumber || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Branch:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.branch || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">CGPA:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.cgpa || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Phone:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.phone || '-'}</span></div>
-                            <div className="flex gap-2"><span className="font-medium min-w-16">Skills:</span> <span className="text-blue-900 dark:text-blue-200">{(req.requestedChanges.skills || []).join(', ') || '-'}</span></div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {req.status === 'pending' ? (
-                        <div className="border-t dark:border-gray-700 pt-4">
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Admin Comments (Optional)</label>
-                          <textarea 
-                            id={`comment-${req._id}`}
-                            className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent transition mb-3" 
-                            rows="2"
-                            placeholder="Add feedback or comments for the student..."
-                          />
-                          <div className="flex gap-3">
-                            <button 
-                              onClick={async ()=>{ 
-                                const comments = document.getElementById(`comment-${req._id}`).value;
-                                await approveProfileEditRequest(req._id, comments);
-                                alert('Request approved successfully!'); 
-                                load(); 
-                              }} 
-                              className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl"
-                            >
-                              Approve Request
-                            </button>
-                            <button 
-                              onClick={async ()=>{ 
-                                const comments = document.getElementById(`comment-${req._id}`).value;
-                                if(!comments.trim()) {
-                                  alert('Please provide a reason for rejection');
-                                  return;
-                                }
-                                await rejectProfileEditRequest(req._id, comments);
-                                alert('Request rejected'); 
-                                load(); 
-                              }} 
-                              className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl"
-                            >
-                              Reject Request
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        req.adminComments && (
-                          <div className="border-t dark:border-gray-700 pt-4">
-                            <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-4 rounded-xl border border-orange-200 dark:border-orange-800">
-                              <div className="text-sm font-semibold text-orange-800 dark:text-orange-300 mb-2 flex items-center gap-2">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                </svg>
-                                Admin Comments
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Submitted: {new Date(req.createdAt).toLocaleString()}
                               </div>
-                              <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{req.adminComments}</div>
-                              {req.reviewedAt && (
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                  Reviewed: {new Date(req.reviewedAt).toLocaleString()}
-                                </div>
-                              )}
+                            </div>
+                            <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold ${
+                              req.status === 'approved' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700' :
+                              req.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700' :
+                              'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700'
+                            }`}>
+                              {req.status === 'approved' ? 'Approved' : req.status === 'rejected' ? 'Rejected' : 'Pending'}
+                            </span>
+                          </div>
+                          <button 
+                            className="ml-4 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedRequests(prev => ({ ...prev, [req._id]: !prev[req._id] }));
+                            }}
+                          >
+                            <svg 
+                              className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Expandable Content */}
+                      {isExpanded && (
+                        <div className="px-6 pb-6 border-t border-gray-200 dark:border-gray-700">
+                          <div className="grid md:grid-cols-2 gap-4 mt-4">
+                            <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-xl border border-gray-200 dark:border-gray-600">
+                              <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                                <span>📋</span> Current Profile
+                              </h4>
+                              <div className="space-y-2 text-sm">
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Name:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.name || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Roll:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.rollNumber || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Branch:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.branch || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">CGPA:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.cgpa || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Phone:</span> <span className="text-gray-600 dark:text-gray-400">{req.studentId?.profile?.phone || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Skills:</span> <span className="text-gray-600 dark:text-gray-400">{(req.studentId?.profile?.skills || []).join(', ') || '-'}</span></div>
+                              </div>
+                            </div>
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border border-blue-200 dark:border-blue-800">
+                              <h4 className="font-semibold text-sm text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
+                                <span>✨</span> Requested Changes
+                              </h4>
+                              <div className="space-y-2 text-sm">
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Name:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.name || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Roll:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.rollNumber || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Branch:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.branch || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">CGPA:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.cgpa || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Phone:</span> <span className="text-blue-900 dark:text-blue-200">{req.requestedChanges.phone || '-'}</span></div>
+                                <div className="flex gap-2"><span className="font-medium min-w-16">Skills:</span> <span className="text-blue-900 dark:text-blue-200">{(req.requestedChanges.skills || []).join(', ') || '-'}</span></div>
+                              </div>
                             </div>
                           </div>
-                        )
+
+                          {req.status === 'pending' ? (
+                            <div className="border-t dark:border-gray-700 pt-4 mt-4">
+                              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Admin Comments (Optional)</label>
+                              <textarea 
+                                id={`comment-${req._id}`}
+                                className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent transition mb-3" 
+                                rows="2"
+                                placeholder="Add feedback or comments for the student..."
+                              />
+                              <div className="flex gap-3">
+                                <button 
+                                  onClick={async ()=>{ 
+                                    const comments = document.getElementById(`comment-${req._id}`).value;
+                                    await approveProfileEditRequest(req._id, comments);
+                                    setSuccess('Request approved successfully!');
+                                    setTimeout(() => setSuccess(null), 5000);
+                                    load(); 
+                                  }} 
+                                  className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl"
+                                >
+                                  Approve Request
+                                </button>
+                                <button 
+                                  onClick={async ()=>{ 
+                                    const comments = document.getElementById(`comment-${req._id}`).value;
+                                    if(!comments.trim()) {
+                                      setError('Please provide a reason for rejection');
+                                      setTimeout(() => setError(null), 5000);
+                                      return;
+                                    }
+                                    await rejectProfileEditRequest(req._id, comments);
+                                    setSuccess('Request rejected');
+                                    setTimeout(() => setSuccess(null), 5000);
+                                    load(); 
+                                  }} 
+                                  className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl"
+                                >
+                                  Reject Request
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            req.adminComments && (
+                              <div className="border-t dark:border-gray-700 pt-4 mt-4">
+                                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-4 rounded-xl border border-orange-200 dark:border-orange-800">
+                                  <div className="text-sm font-semibold text-orange-800 dark:text-orange-300 mb-2 flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                    </svg>
+                                    Admin Comments
+                                  </div>
+                                  <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{req.adminComments}</div>
+                                  {req.reviewedAt && (
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                      Reviewed: {new Date(req.reviewedAt).toLocaleString()}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
                       )}
                     </div>
-                  ))}
+                  )})}
                 </div>
               )}
             </div>
@@ -399,7 +452,8 @@ export default function AdminDashboard(){
                                 headers: { 'Content-Type':'application/json','Authorization': `Bearer ${localStorage.getItem('token')}` }, 
                                 body: JSON.stringify({ comments: val }) 
                               }); 
-                              alert('Comments saved successfully!'); 
+                              setSuccess('Comments saved successfully!');
+                              setTimeout(() => setSuccess(null), 5000);
                               load(); 
                             }} 
                             className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
@@ -414,7 +468,8 @@ export default function AdminDashboard(){
                                   headers: { 'Content-Type':'application/json','Authorization': `Bearer ${localStorage.getItem('token')}` }, 
                                   body: JSON.stringify({ status: 'finished' }) 
                                 }); 
-                                alert('Marked as finished!'); 
+                                setSuccess('Marked as finished!');
+                                setTimeout(() => setSuccess(null), 5000);
                                 load(); 
                               }} 
                               className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl"
@@ -511,7 +566,8 @@ export default function AdminDashboard(){
                           onClick={async () => {
                             const note = prompt('Add a note (optional):');
                             await approveCompanyPermissionRequest(req._id, note || '');
-                            alert('Permission approved!');
+                            setSuccess('Permission approved!');
+                            setTimeout(() => setSuccess(null), 5000);
                             load();
                           }}
                           className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition shadow-lg"
@@ -522,7 +578,8 @@ export default function AdminDashboard(){
                           onClick={async () => {
                             const note = prompt('Add a note (optional):');
                             await rejectCompanyPermissionRequest(req._id, note || '');
-                            alert('Permission rejected');
+                            setSuccess('Permission rejected');
+                            setTimeout(() => setSuccess(null), 5000);
                             load();
                           }}
                           className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition shadow-lg"
@@ -545,14 +602,22 @@ export default function AdminDashboard(){
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Platform Statistics</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Overview of placement system metrics</p>
               </div>
-              <div className="text-4xl">📊</div>
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {/* Students Stats */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-6 rounded-2xl border border-blue-200 dark:border-blue-800">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-6 rounded-2xl border border-blue-200 dark:border-blue-800 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-4xl">🎓</div>
+                  <div className="w-12 h-12 rounded-xl bg-blue-500 dark:bg-blue-600 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
                   <span className="text-xs font-semibold text-blue-600 dark:text-blue-300 uppercase tracking-wide">Students</span>
                 </div>
                 <div className="text-4xl font-bold text-blue-900 dark:text-blue-200 mb-2">{students.length}</div>
@@ -560,22 +625,33 @@ export default function AdminDashboard(){
               </div>
 
               {/* Companies Stats */}
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 p-6 rounded-2xl border border-purple-200 dark:border-purple-800">
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 p-6 rounded-2xl border border-purple-200 dark:border-purple-800 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-4xl">🏢</div>
+                  <div className="w-12 h-12 rounded-xl bg-purple-500 dark:bg-purple-600 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
                   <span className="text-xs font-semibold text-purple-600 dark:text-purple-300 uppercase tracking-wide">Companies</span>
                 </div>
                 <div className="text-4xl font-bold text-purple-900 dark:text-purple-200 mb-2">{companies.length}</div>
                 <div className="text-sm text-purple-700 dark:text-purple-300">Registered Companies</div>
-                <div className="mt-3 text-xs text-purple-600 dark:text-purple-400">
-                  ✓ Verified: {companies.filter(c => c.company?.companyVerified).length}
+                <div className="mt-3 flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Verified: {companies.filter(c => c.company?.companyVerified).length}
                 </div>
               </div>
 
               {/* Jobs Stats */}
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 p-6 rounded-2xl border border-orange-200 dark:border-orange-800">
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 p-6 rounded-2xl border border-orange-200 dark:border-orange-800 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-4xl">💼</div>
+                  <div className="w-12 h-12 rounded-xl bg-orange-500 dark:bg-orange-600 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
                   <span className="text-xs font-semibold text-orange-600 dark:text-orange-300 uppercase tracking-wide">Jobs</span>
                 </div>
                 <div className="text-4xl font-bold text-orange-900 dark:text-orange-200 mb-2">
@@ -585,9 +661,13 @@ export default function AdminDashboard(){
               </div>
 
               {/* Edit Requests Stats */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-6 rounded-2xl border border-green-200 dark:border-green-800">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-6 rounded-2xl border border-green-200 dark:border-green-800 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-4xl">✏️</div>
+                  <div className="w-12 h-12 rounded-xl bg-green-500 dark:bg-green-600 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
                   <span className="text-xs font-semibold text-green-600 dark:text-green-300 uppercase tracking-wide">Edit Requests</span>
                 </div>
                 <div className="text-4xl font-bold text-green-900 dark:text-green-200 mb-2">
@@ -597,9 +677,13 @@ export default function AdminDashboard(){
               </div>
 
               {/* Deletion Requests Stats */}
-              <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 p-6 rounded-2xl border border-yellow-200 dark:border-yellow-800">
+              <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 p-6 rounded-2xl border border-yellow-200 dark:border-yellow-800 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-4xl">📋</div>
+                  <div className="w-12 h-12 rounded-xl bg-yellow-500 dark:bg-yellow-600 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
                   <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300 uppercase tracking-wide">Deletions</span>
                 </div>
                 <div className="text-4xl font-bold text-yellow-900 dark:text-yellow-200 mb-2">

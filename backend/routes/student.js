@@ -7,7 +7,6 @@ const router = express.Router();
 const User = require('../models/User');
 const Job = require('../models/Job');
 const Application = require('../models/Application');
-const Notification = require('../models/Notification');
 const ProfileEditRequest = require('../models/ProfileEditRequest');
 const CompanyPermissionRequest = require('../models/CompanyPermissionRequest');
 
@@ -28,6 +27,7 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // get my profile
 router.get('/me', auth.requireAuth, auth.requireRole(['student']), async (req, res)=>{
+  console.log('Student /me called, profile:', req.user.profile);
   res.json(req.user);
 });
 
@@ -99,10 +99,6 @@ router.post('/apply/:jobId', auth.requireAuth, auth.requireRole(['student']), as
     const student = await User.findById(req.user._id);
     const app = new Application({ jobId, studentId: req.user._id, resumeSnapshotPath: student.profile?.resumePath });
     await app.save();
-    // create notification for company? (optional) - here we notify student that application recorded
-    try{
-      await Notification.create({ userId: req.user._id, type: 'application', title: 'Application submitted', message: `You applied to ${job.title}`, data: { jobId: job._id, applicationId: app._id } });
-    }catch(e){ console.error('notif error', e) }
     res.json({ msg: 'Applied' });
   }catch(err){
     console.error(err);
@@ -122,17 +118,6 @@ router.get('/applications', auth.requireAuth, auth.requireRole(['student']), asy
         }
       });
     res.json(apps);
-  }catch(err){
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// list my notifications
-router.get('/notifications', auth.requireAuth, auth.requireRole(['student']), async (req, res)=>{
-  try{
-    const notifs = await Notification.find({ userId: req.user._id }).sort({ createdAt: -1 }).limit(50);
-    res.json(notifs);
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -208,16 +193,7 @@ router.post('/request-company-permission', auth.requireAuth, auth.requireRole(['
     // Notify admin
     try{
       const admins = await User.find({ role: 'admin' });
-      for(const admin of admins) {
-        await Notification.create({
-          userId: admin._id,
-          type: 'permission_request',
-          title: 'Company Permission Request',
-          message: `Student has requested permission to apply to a company after being placed`,
-          data: { requestId: request._id, studentId: req.user._id }
-        });
-      }
-    }catch(e){ console.error('notif error', e) }
+    }catch(e){ console.error('error', e) }
     
     res.json({ msg: 'Permission request submitted successfully' });
   }catch(err){

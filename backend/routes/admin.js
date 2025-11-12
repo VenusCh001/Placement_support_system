@@ -11,7 +11,6 @@ const Job = require('../models/Job');
 const JobDeletionRequest = require('../models/JobDeletionRequest');
 const ProfileEditRequest = require('../models/ProfileEditRequest');
 const CompanyPermissionRequest = require('../models/CompanyPermissionRequest');
-const Notification = require('../models/Notification');
 
 // get current admin profile
 router.get('/me', auth.requireAuth, auth.requireRole(['admin']), async (req, res)=>{
@@ -75,9 +74,26 @@ router.post('/profile-edit-requests/:id/approve', auth.requireAuth, auth.require
     const user = await User.findById(editRequest.studentId);
     if(!user) return res.status(404).json({ error: 'Student not found' });
     
-    // Apply the requested changes
-    user.profile = Object.assign({}, user.profile || {}, editRequest.requestedChanges);
+    console.log('Before update:', user.profile);
+    
+    // Apply the requested changes - properly update each field
+    if(!user.profile) user.profile = {};
+    
+    // Update each field individually to ensure Mongoose tracks changes
+    if(editRequest.requestedChanges.name !== undefined) user.profile.name = editRequest.requestedChanges.name;
+    if(editRequest.requestedChanges.rollNumber !== undefined) user.profile.rollNumber = editRequest.requestedChanges.rollNumber;
+    if(editRequest.requestedChanges.branch !== undefined) user.profile.branch = editRequest.requestedChanges.branch;
+    if(editRequest.requestedChanges.cgpa !== undefined) user.profile.cgpa = editRequest.requestedChanges.cgpa;
+    if(editRequest.requestedChanges.phone !== undefined) user.profile.phone = editRequest.requestedChanges.phone;
+    if(editRequest.requestedChanges.skills !== undefined) user.profile.skills = editRequest.requestedChanges.skills;
+    
+    console.log('After update:', user.profile);
+    
+    // Mark the profile as modified for Mongoose
+    user.markModified('profile');
     await user.save();
+    
+    console.log('Saved to database');
     
     // Update request status
     editRequest.status = 'approved';
@@ -178,17 +194,6 @@ router.post('/company-permission-requests/:id/approve', auth.requireAuth, auth.r
     request.adminNote = req.body.note || '';
     await request.save();
     
-    // Notify student
-    try{
-      await Notification.create({
-        userId: request.studentId,
-        type: 'permission_approved',
-        title: 'Permission Approved',
-        message: 'Your request to apply to a company has been approved by admin',
-        data: { requestId: request._id, companyId: request.companyId }
-      });
-    }catch(e){ console.error('notif error', e) }
-    
     res.json({ msg: 'Permission request approved' });
   }catch(err){
     console.error(err);
@@ -207,17 +212,6 @@ router.post('/company-permission-requests/:id/reject', auth.requireAuth, auth.re
     request.respondedAt = new Date();
     request.adminNote = req.body.note || '';
     await request.save();
-    
-    // Notify student
-    try{
-      await Notification.create({
-        userId: request.studentId,
-        type: 'permission_rejected',
-        title: 'Permission Rejected',
-        message: 'Your request to apply to a company has been rejected by admin',
-        data: { requestId: request._id, companyId: request.companyId }
-      });
-    }catch(e){ console.error('notif error', e) }
     
     res.json({ msg: 'Permission request rejected' });
   }catch(err){

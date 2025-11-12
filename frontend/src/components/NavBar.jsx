@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import Notifications from './Notifications'
 
 /**
  * Role-aware top navigation
@@ -139,9 +138,6 @@ export default function NavBar({ darkMode, toggleDarkMode }){
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-3">
-                {/* Notifications for students */}
-                {role === 'student' && <Notifications />}
-                
                 {/* User Info */}
                 <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                   <div className="flex items-center gap-2">

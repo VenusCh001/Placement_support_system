@@ -15,13 +15,19 @@ export default function StudentDashboard(){
   const [editMsg, setEditMsg] = useState(null)
   const [editRequests, setEditRequests] = useState([])
   const [showRequests, setShowRequests] = useState(false)
+  const [expandedRequests, setExpandedRequests] = useState({}) // Track expanded state
   const [activeTab, setActiveTab] = useState('jobs') // 'jobs' or 'applications'
   const [hasOffer, setHasOffer] = useState(false)
   const [offerCount, setOfferCount] = useState(0)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
 
-  useEffect(()=>{
-    async function load(){
+  async function loadProfile(){
+    try {
+      console.log('Loading profile...');
       const data = await getMe();
+      console.log('Profile data received:', data);
+      
       setMe(data);
       setEditForm({
         name: data?.profile?.name || '',
@@ -38,8 +44,15 @@ export default function StudentDashboard(){
 
       // Check for offers (Selected status)
       await checkOfferStatus();
+      
+      console.log('Profile loaded successfully');
+    } catch(err) {
+      console.error('Error loading profile:', err);
     }
-    load();
+  }
+
+  useEffect(()=>{
+    loadProfile();
   },[])
 
   const navigate = useNavigate();
@@ -101,6 +114,24 @@ export default function StudentDashboard(){
           </h1>
           <p className="text-gray-600 dark:text-gray-400">Welcome back! Manage your profile and explore job opportunities.</p>
         </div>
+
+        {/* Success and Error Messages */}
+        {success && (
+          <div className="mb-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 dark:border-green-400 text-green-800 dark:text-green-300 p-4 rounded-lg flex items-center gap-3">
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">{success}</span>
+          </div>
+        )}
+        {error && (
+          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 dark:border-red-400 text-red-800 dark:text-red-300 p-4 rounded-lg flex items-center gap-3">
+            <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">{error}</span>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-4 gap-8 mb-6">
           {/* Profile Sidebar */}
@@ -200,22 +231,23 @@ export default function StudentDashboard(){
                     </div>
                     
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                        <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center">
+                        <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Resume</div>
-                        <div className="text-base font-medium">
-                          {me.profile?.resumePath ? 
-                            <a className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline flex items-center gap-1" href={`${import.meta.env.VITE_API_BASE || 'http://localhost:4000'}/uploads/${me.profile.resumePath}`} target="_blank" rel="noreferrer">
-                              Download
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                              </svg>
-                            </a> : 
-                            <span className="text-gray-400 dark:text-gray-500">Not uploaded</span>
+                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Skills</div>
+                        <div className="text-sm text-gray-800 dark:text-gray-200">
+                          {me.profile?.skills && me.profile.skills.length > 0 ? 
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                              {me.profile.skills.map((skill, idx) => (
+                                <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-700">
+                                  {skill}
+                                </span>
+                              ))}
+                            </div> : 
+                            <span className="text-gray-400 dark:text-gray-500">Not specified</span>
                           }
                         </div>
                       </div>
@@ -283,35 +315,6 @@ export default function StudentDashboard(){
                   </svg>
                   {editMsg}
                 </div>}
-                
-                {/* Resume Upload Section */}
-                <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    Upload Resume
-                  </h3>
-                  <form onSubmit={handleUpload} className="space-y-4">
-                    <div className="border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-xl p-6 hover:border-blue-500 dark:hover:border-blue-500 transition bg-white dark:bg-gray-700">
-                      <input 
-                        type="file" 
-                        accept=".pdf,.doc,.docx" 
-                        onChange={e=>setFile(e.target.files[0])} 
-                        className="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:bg-blue-600 dark:file:bg-blue-700 file:text-white hover:file:bg-blue-700 dark:hover:file:bg-blue-600 file:font-semibold file:cursor-pointer cursor-pointer"
-                      />
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Accepted formats: PDF, DOC, DOCX (Max 5MB)</p>
-                    </div>
-                    <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition shadow-lg hover:shadow-xl">
-                      Upload Resume
-                    </Button>
-                    {msg && (
-                      <div className="text-sm text-center p-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800">
-                        {msg}
-                      </div>
-                    )}
-                  </form>
-                </div>
 
                 <form onSubmit={handleEditSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
@@ -375,6 +378,51 @@ export default function StudentDashboard(){
                     </button>
                   </div>
                 </form>
+                
+                {/* Resume Upload Section */}
+                <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-800">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    Upload Resume
+                  </h3>
+                  <form onSubmit={handleUpload} className="space-y-4">
+                    <div className="border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-xl p-6 hover:border-blue-500 dark:hover:border-blue-500 transition bg-white dark:bg-gray-700">
+                      <input 
+                        type="file" 
+                        accept=".pdf,.doc,.docx" 
+                        onChange={e=>setFile(e.target.files[0])} 
+                        className="w-full text-sm text-gray-600 dark:text-gray-300 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:bg-blue-600 dark:file:bg-blue-700 file:text-white hover:file:bg-blue-700 dark:hover:file:bg-blue-600 file:font-semibold file:cursor-pointer cursor-pointer"
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Accepted formats: PDF, DOC, DOCX (Max 5MB)</p>
+                    </div>
+                    {me?.profile?.resumePath && (
+                      <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Current resume: </span>
+                        <a 
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline" 
+                          href={`${import.meta.env.VITE_API_BASE || 'http://localhost:4000'}/uploads/${me.profile.resumePath}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                        >
+                          View Resume
+                        </a>
+                      </div>
+                    )}
+                    <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition shadow-lg hover:shadow-xl">
+                      Upload Resume
+                    </Button>
+                    {msg && (
+                      <div className="text-sm text-center p-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800">
+                        {msg}
+                      </div>
+                    )}
+                  </form>
+                </div>
               </div>
             )}
 
@@ -386,12 +434,45 @@ export default function StudentDashboard(){
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">My Edit Requests</h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Track your profile edit submissions</p>
                   </div>
-                  <button onClick={()=>setShowRequests(false)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={async ()=> { 
+                        await loadProfile(); 
+                        alert('Profile refreshed!');
+                      }} 
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition shadow-sm"
+                      title="Refresh profile to see updated details"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Refresh
+                    </button>
+                    <button onClick={()=>setShowRequests(false)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
+                
+                {/* Check for approved requests notification */}
+                {editRequests.some(req => req.status === 'approved') && (
+                  <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-300 dark:border-green-700 rounded-xl flex items-start gap-3">
+                    <svg className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="flex-1">
+                      <div className="font-semibold text-green-800 dark:text-green-300 mb-1">
+                        Profile Updates Approved!
+                      </div>
+                      <div className="text-sm text-green-700 dark:text-green-400">
+                        Your profile edit requests have been approved. Click the "Refresh" button above to load your updated profile information.
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 {editRequests.length === 0 ? (
                   <div className="text-center py-16 text-gray-500 dark:text-gray-400">
                     <svg className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,67 +483,97 @@ export default function StudentDashboard(){
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {editRequests.map(req => (
-                      <div key={req._id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all dark:bg-gray-700/50">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold ${
-                              req.status === 'approved' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800' :
-                              req.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800' :
-                              'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800'
-                            }`}>
-                              {req.status === 'approved' ? 'Approved' : req.status === 'rejected' ? 'Rejected' : 'Pending'}
-                            </span>
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(req.createdAt).toLocaleDateString('en-US', { 
-                              year: 'numeric', 
-                              month: 'short', 
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </div>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                          <div className="flex items-start gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Name:</span>
-                            <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.name}</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Roll:</span>
-                            <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.rollNumber}</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Branch:</span>
-                            <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.branch}</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">CGPA:</span>
-                            <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.cgpa}</span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Phone:</span>
-                            <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.phone}</span>
-                          </div>
-                          <div className="flex items-start gap-2 md:col-span-2">
-                            <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Skills:</span>
-                            <span className="text-gray-600 dark:text-gray-400">{(req.requestedChanges.skills || []).join(', ')}</span>
-                          </div>
-                        </div>
-                        {req.adminComments && (
-                          <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                            <div className="text-xs font-semibold text-blue-800 dark:text-blue-300 uppercase tracking-wide mb-2 flex items-center gap-2">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                              </svg>
-                              Admin Comments
+                    {editRequests.map(req => {
+                      const isExpanded = expandedRequests[req._id];
+                      return (
+                      <div key={req._id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all dark:bg-gray-700/50">
+                        {/* Header - Always Visible */}
+                        <div 
+                          className="p-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                          onClick={() => setExpandedRequests(prev => ({ ...prev, [req._id]: !prev[req._id] }))}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4 flex-1">
+                              <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold ${
+                                req.status === 'approved' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800' :
+                                req.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800' :
+                                'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800'
+                              }`}>
+                                {req.status === 'approved' ? 'Approved' : req.status === 'rejected' ? 'Rejected' : 'Pending'}
+                              </span>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {new Date(req.createdAt).toLocaleDateString('en-US', { 
+                                  year: 'numeric', 
+                                  month: 'short', 
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </div>
                             </div>
-                            <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{req.adminComments}</div>
+                            <button 
+                              className="ml-4 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedRequests(prev => ({ ...prev, [req._id]: !prev[req._id] }));
+                              }}
+                            >
+                              <svg 
+                                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        
+                        {/* Expandable Content */}
+                        {isExpanded && (
+                          <div className="px-6 pb-6 border-t border-gray-200 dark:border-gray-700">
+                            <div className="grid md:grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mt-4">
+                              <div className="flex items-start gap-2">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Name:</span>
+                                <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.name}</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Roll:</span>
+                                <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.rollNumber}</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Branch:</span>
+                                <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.branch}</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">CGPA:</span>
+                                <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.cgpa}</span>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Phone:</span>
+                                <span className="text-gray-600 dark:text-gray-400">{req.requestedChanges.phone}</span>
+                              </div>
+                              <div className="flex items-start gap-2 md:col-span-2">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300 min-w-20">Skills:</span>
+                                <span className="text-gray-600 dark:text-gray-400">{(req.requestedChanges.skills || []).join(', ')}</span>
+                              </div>
+                            </div>
+                            {req.adminComments && (
+                              <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                                <div className="text-xs font-semibold text-blue-800 dark:text-blue-300 uppercase tracking-wide mb-2 flex items-center gap-2">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                  </svg>
+                                  Admin Comments
+                                </div>
+                                <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{req.adminComments}</div>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
-                    ))}
+                    )})}
                   </div>
                 )}
               </div>
@@ -568,7 +679,8 @@ function AllJobs({ me, onApplicationChange }){
     const { companyId, reason } = permissionModalData;
     
     if(!reason || reason.trim() === '') {
-      alert('Please provide a reason for your request');
+      setError('Please provide a reason for your request');
+      setTimeout(() => setError(null), 5000);
       return;
     }
 
@@ -589,7 +701,8 @@ function AllJobs({ me, onApplicationChange }){
       const data = await res.json();
       
       if(res.ok){
-        alert('Permission request submitted successfully! Admin will review your request.');
+        setSuccess('Permission request submitted successfully! Admin will review your request.');
+        setTimeout(() => setSuccess(null), 5000);
         // Reload permission requests
         const permRes = await fetch(base + '/api/students/company-permission-requests', { 
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } 
@@ -605,11 +718,13 @@ function AllJobs({ me, onApplicationChange }){
         // Reset modal data
         setPermissionModalData({ companyId: '', companyName: '', reason: '' });
       } else {
-        alert(data.error || 'Failed to submit permission request');
+        setError(data.error || 'Failed to submit permission request');
+        setTimeout(() => setError(null), 5000);
       }
     }catch(err){
       console.error('Permission request failed', err);
-      alert('Permission request failed: ' + (err.message || err));
+      setError('Permission request failed: ' + (err.message || err));
+      setTimeout(() => setError(null), 5000);
     }finally{
       setRequestingPermission(m => ({ ...m, [companyId]: false }));
     }
@@ -618,7 +733,8 @@ function AllJobs({ me, onApplicationChange }){
   async function apply(jobId){
     const role = localStorage.getItem('role');
     if(role !== 'student'){
-      alert('Please login as a student to apply');
+      setError('Please login as a student to apply');
+      setTimeout(() => setError(null), 5000);
       return;
     }
     const base = (import.meta.env.VITE_API_BASE || 'http://localhost:4000')
@@ -628,7 +744,11 @@ function AllJobs({ me, onApplicationChange }){
       const res = await fetch(base + `/api/students/apply/${jobId}`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
       const data = await res.json().catch(()=>({}));
       if(!res.ok){
-        alert(data.error || data.msg || `Apply failed (${res.status})`);
+        setError(data.error || data.msg || `Apply failed (${res.status})`);
+        setTimeout(() => setError(null), 5000);
+      } else {
+        setSuccess('Application submitted successfully!');
+        setTimeout(() => setSuccess(null), 5000);
       }
       // refresh apps
       const ares = await fetch(base + '/api/students/applications', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
@@ -645,7 +765,8 @@ function AllJobs({ me, onApplicationChange }){
       return data;
     }catch(err){
       console.error('Apply failed', err);
-      alert('Apply failed: ' + (err.message || err));
+      setError('Apply failed: ' + (err.message || err));
+      setTimeout(() => setError(null), 5000);
     }finally{
       setApplyingMap(m=>({ ...m, [jobId]: false }))
     }
@@ -769,7 +890,20 @@ function AllJobs({ me, onApplicationChange }){
                             </button>
                           );
                         } else {
-                          // No request yet - show request button
+                          // No request yet - show request button only if eligible
+                          if (!eligible) {
+                            // Not eligible - show disabled apply button
+                            return (
+                              <button
+                                disabled
+                                className="bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 px-4 py-2 rounded-lg font-medium cursor-not-allowed"
+                                title="You are not eligible for this job"
+                              >
+                                Not Eligible
+                              </button>
+                            );
+                          }
+                          // Eligible - show request permission button
                           return (
                             <button
                               onClick={()=> requestPermission(j.companyId, j.companyName || j.companyEmail)}
